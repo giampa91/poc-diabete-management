@@ -2,12 +2,12 @@ package com.diabete.glycemia;
 
 import java.time.LocalDateTime;
 
-public class GlycemicValue {
+public class GlycemicValues {
 	
 	private long id;
 	private LocalDateTime dateTime;
 	private String insulinType;
-	private String glycemia;
+	private int glycemia;
 	private int carbohydrate;
 	
 	public long getId() {
@@ -33,11 +33,11 @@ public class GlycemicValue {
 		this.insulinType = insulinType;
 	}
 	
-	public String getGlycemia() {
+	public int getGlycemia() {
 		return glycemia;
 	}
 	
-	public void setGlycemia(String glycemia) {
+	public void setGlycemia(int glycemia) {
 		this.glycemia = glycemia;
 	}
 	
