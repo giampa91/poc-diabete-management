@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-class GlycemiaController {
+class CalculationController {
   
   @GetMapping("/Calculation/{carbohydrate}:{glycemia}")
   int getInsulinDose(@PathVariable int carbohydrate, @PathVariable int glycemia) {
@@ -16,4 +16,3 @@ class GlycemiaController {
 	  return ((glycemia - 150) / 45) + (carbohydrate / 12);
   }
 }
-

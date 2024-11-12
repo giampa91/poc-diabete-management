@@ -19,5 +19,11 @@ class GlycemiaApplicationTests {
 //		UserDto userDto = gliGlycemiaService.getUser(1);
 //		System.out.println(userDto.getName() + " " + userDto.getSurname());
 //	}
+	
+//	@Test
+//	void test() {
+//		int dose = gliGlycemiaService.getInsulinDose(12, 200);
+//		System.out.println(dose);
+//	}
 
 }
