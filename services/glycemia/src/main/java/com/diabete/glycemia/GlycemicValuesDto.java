@@ -2,7 +2,7 @@ package com.diabete.glycemia;
 
 import java.time.LocalDateTime;
 
-public class GlycemicValues {
+public class GlycemicValuesDto {
 	
 	private long id;
 	private LocalDateTime dateTime;
