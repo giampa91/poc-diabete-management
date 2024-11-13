@@ -16,22 +16,18 @@ public class GlycemiaService {
 	@Autowired
 	WebClient.Builder webClient;
 
-	public UserDto getUser(long id) {
-		//return webClient.build().get().uri(userUrl + "/users/{id}", id).accept(MediaType.APPLICATION_JSON).retrieve()
-		//		.toEntity(UserDto.class).block().getBody();
-		
+	public UserDto getUser(long id) {		
 		return webClient.build()
         .get()
-        .uri("http://user-service/users/1")
+        .uri(userUrl + "/users/1")
         .retrieve()
         .bodyToMono(UserDto.class).block();
-		
 	}
 
-//	public int getInsulinDose(int carbohydrate, int glycemia) {
-//		return calculationClient.get().uri("/Calculation/{carbohydrate}:{glycemia}", carbohydrate, glycemia)
-//				.accept(MediaType.APPLICATION_JSON).retrieve().toEntity(Integer.class).block().getBody();
-//	}
+	public int getInsulinDose(int carbohydrate, int glycemia) {
+		return webClient.build().get().uri(calculationUrl+"/Calculation/{carbohydrate}:{glycemia}", carbohydrate, glycemia)
+				.accept(MediaType.APPLICATION_JSON).retrieve().toEntity(Integer.class).block().getBody();
+	}
 
 	public GlycemicValues insertGlycemicValues(GlycemicValuesDto glycemicValuesDto) {
 		// check user
