@@ -2,8 +2,10 @@ import React, {useState} from 'react';
 import {Text, StyleSheet, View, TextInput, Button, FlatList} from 'react-native';
 
 export default function HomeScreen() {
-  const [glycemicDataList, setNewGlycemicDataList] = useState(["date1", "date2"]);
-  const [newGlycemicData, setNewGlycemicData] = useState('');
+  const [glycemicDataList, setNewGlycemicDataList] = useState([{title: "date1", dose: "5"}]);
+  const [newGlycemicData, setNewGlycemicData] = useState("");
+
+  
 
   function setTheNewGlycemicData(theGlycemicData : string) {
     setNewGlycemicData(theGlycemicData);
@@ -12,25 +14,26 @@ export default function HomeScreen() {
   function addTheNewGlycemicData() {
     if(newGlycemicData == undefined) return;
 
-    let filteredList = glycemicDataList.filter(e => e == newGlycemicData);
+    let filteredList = glycemicDataList.filter(e => e.title == newGlycemicData);
 
     if(filteredList.length == 0){
-      setNewGlycemicDataList([...glycemicDataList, newGlycemicData]);
+      setNewGlycemicDataList([...glycemicDataList, {title: newGlycemicData, dose: "5"}]);
     }
   }
 
   function deleteGlycemicData(theGlycemicData: string){
-    setNewGlycemicDataList(glycemicDataList.filter(e => e != theGlycemicData));
+    setNewGlycemicDataList(glycemicDataList.filter(e => e.title != theGlycemicData));
   }
 
-  type ItemProps = {title: string};
+  type ItemProps = {title: string, title2: string};
 
-  const Item = ({title}: ItemProps) => (
+  const Item = (itemProps: ItemProps) => (
     <View>
-      <Text >{title}</Text>
+      <Text >{itemProps.title}</Text>
+      <Text >{itemProps.title2}</Text>
       <Button
           title="delete"
-          onPress={() => deleteGlycemicData(title)}
+          onPress={() => deleteGlycemicData(itemProps.title)}
         />
     </View>
   );
@@ -48,12 +51,13 @@ export default function HomeScreen() {
 <View style={styles.container}>
       <FlatList
         data={glycemicDataList}
-        renderItem={({item}) => <Item title={item} />}
+        renderItem={(itemProps) => 
+          <Item title={itemProps.item.title} 
+            title2={itemProps.item.dose} 
+          />}
       />
     </View>
-      
     </View>
-
   );
 }
 
