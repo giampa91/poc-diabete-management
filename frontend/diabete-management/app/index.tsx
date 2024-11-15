@@ -1,35 +1,59 @@
 import React, {useState} from 'react';
-import {Text, StyleSheet, View, TextInput, Button, Alert} from 'react-native';
+import {Text, StyleSheet, View, TextInput, Button, FlatList} from 'react-native';
 
 export default function HomeScreen() {
-  const [insulinType, setInsulinType] = useState('');
-  const [glycemia, setGlycemia] = useState(0);
-  const [carbohydrate, setCarbohydrate] = useState(0);
-  const [dose, setDose] = useState(0);
-  const [userId, setUserId] = useState(0);
+  const [glycemicDataList, setNewGlycemicDataList] = useState(["date1", "date2"]);
+  const [newGlycemicData, setNewGlycemicData] = useState('');
+
+  function setTheNewGlycemicData(theGlycemicData : string) {
+    setNewGlycemicData(theGlycemicData);
+  }
+
+  function addTheNewGlycemicData() {
+    if(newGlycemicData == undefined) return;
+
+    let filteredList = glycemicDataList.filter(e => e == newGlycemicData);
+
+    if(filteredList.length == 0){
+      setNewGlycemicDataList([...glycemicDataList, newGlycemicData]);
+    }
+  }
+
+  function deleteGlycemicData(theGlycemicData: string){
+    setNewGlycemicDataList(glycemicDataList.filter(e => e != theGlycemicData));
+  }
+
+  type ItemProps = {title: string};
+
+  const Item = ({title}: ItemProps) => (
+    <View>
+      <Text >{title}</Text>
+      <Button
+          title="delete"
+          onPress={() => deleteGlycemicData(title)}
+        />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <Text>insert glycemic data</Text>
-      <TextInput placeholder="insulin type" 
-        onChangeText={newInsulinType => setInsulinType(newInsulinType)}/>
-      <TextInput placeholder="glycemia" 
-        onChangeText={newGlycemia => setGlycemia(parseInt(newGlycemia))}/>
-      <TextInput placeholder="carbohydrate" 
-        onChangeText={newCarbohydrate => setCarbohydrate(parseInt(newCarbohydrate))}/>
-      <TextInput placeholder="dose"
-        onChangeText={newDose => setDose(parseInt(newDose))}/>
-      <TextInput placeholder="userId" 
-        onChangeText={newUserId => setUserId(parseInt(newUserId))}/>
+      <TextInput placeholder="new glycemic data" 
+        onChangeText={setTheNewGlycemicData}/>
       <Button
-          title="Send data"
-          onPress={() => {
-              console.log(insulinType + " " + glycemia + " " + carbohydrate
-                + " " + dose + " " + userId
-              )
-            }
-          }
+          title="insert glycemic data"
+          onPress={(addTheNewGlycemicData)}
         />
+
+<View style={styles.container}>
+      <FlatList
+        data={glycemicDataList}
+        renderItem={({item}) => <Item title={item} />}
+      />
     </View>
+      
+    </View>
+
   );
 }
 
