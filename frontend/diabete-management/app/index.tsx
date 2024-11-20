@@ -59,7 +59,7 @@ export default function HomeScreen() {
 
   const fetchGlycemicData = async () => {
     try {
-      const response = await fetch('http://localhost:8089/glycemia/glycemia');
+      const response = await fetch('http://localhost:8089/glycemia/Glycemia');
       const json = await response.json();
       setGlycemicDataList(json);
     } catch (error) {
