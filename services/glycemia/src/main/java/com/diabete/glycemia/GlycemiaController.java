@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,43 +18,27 @@ class GlycemiaController {
 
 	@Autowired
 	GlycemiaService glycemiaService;
-
+	
 	@GetMapping("/Glycemia")
-	List<GlycemicValues> findAll() {
-		return List.of(getTestGlycemicValue());
+	List<GlycemicValuesDto> findAll() {
+		return glycemiaService.getGlicemicValuesList();
 	}
 
 	@PostMapping("/Glycemia")
-	GlycemicValues newGlycemicValues(@RequestBody GlycemicValuesDto newGlycemicValues) {
+	GlycemicValuesDto createGlycemicValues(@RequestBody GlycemicValuesCreateDto newGlycemicValues) {
 		// add GlycemicValues
-		return glycemiaService.insertGlycemicValues(newGlycemicValues);
-	}
-
-	@GetMapping("/Glycemia/{id}")
-	GlycemicValues findById(@PathVariable Long id) {
-		// find GlycemicValues
-		return getTestGlycemicValue();
+		return glycemiaService.createGlycemicValues(newGlycemicValues);
 	}
 
 	@PutMapping("/Glycemia/{id}")
-	GlycemicValues editGlycemicValues(@RequestBody GlycemicValues editedGlycemicValues, @PathVariable Long id) {
+	GlycemicValuesDto editGlycemicValues(@RequestBody GlycemicValuesDto editedGlycemicValues, @PathVariable Long id) {
 		// edit GlycemicValues
-		return getTestGlycemicValue();
+		throw new RuntimeException("not implemented");
 	}
 
 	@DeleteMapping("/Glycemia/{id}")
-	GlycemicValues deleteGlycemicValues(@PathVariable Long id) {
+	GlycemicValuesDto deleteGlycemicValues(@PathVariable Long id) {
 		// delete GlycemicValues
-		return getTestGlycemicValue();
-	}
-
-	private GlycemicValues getTestGlycemicValue() {
-		GlycemicValues testGlycemicValues = new GlycemicValues();
-		testGlycemicValues.setId(1);
-		testGlycemicValues.setCarbohydrate(24);
-		testGlycemicValues.setDateTime(LocalDateTime.now());
-		testGlycemicValues.setGlycemia(160);
-		testGlycemicValues.setInsulinType("fiasp");
-		return testGlycemicValues;
+		return glycemiaService.deleteGlycemicValues(id);
 	}
 }

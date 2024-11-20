@@ -4,35 +4,31 @@ import {
   StyleSheet,
   View,
   TextInput,
-  Button,
   FlatList,
   TouchableOpacity,
 } from 'react-native';
 
 export default function HomeScreen() {
-  // const [glycemicDataList, setNewGlycemicDataList] = useState([
-  //   {
-  //     id: 1,
-  //     insulineType: 'fiasp',
-  //     glycemia: '120',
-  //     carbohydrate: '12',
-  //     dose: '2',
-  //     userId: '1',
-  //   },
-  // ]);
-  const [newGlycemicDataID, setNewGlycemicDataId] = useState(1);
-  const [newInsulinType, setNewInsulinType] = useState('');
-  const [newGlycemia, setNewGlycemia] = useState('');
-  const [newCarbohydrate, setNewCarboidrate] = useState('');
-  const [newDose, setNewDose] = useState('');
-  const [newUserId, setnewUserId] = useState('');
-  const [newDateTime, setnewDateTime] = useState('');
+  // State management
+  const [newGlycemicData, setNewGlycemicData] = useState({
+    id: 1,
+    dateTime: '',
+    insulineType: '',
+    glycemia: '',
+    carbohydrate: '',
+    dose: '',
+    userId: '',
+  });
+  const [glycemicDataList, setGlycemicDataList] = useState<ItemProps[]>([]);
 
-  const [glycemicDataList, setNewGlycemicDataList] = useState<ItemProps[]>([]);
+  useEffect(() => {
+    fetchGlycemicData();
+  }, []);
 
+  // Types
   type ItemProps = {
     id: number;
-    dateTime: string;  // Ensure this matches the actual response
+    dateTime: string;
     insulineType: string;
     glycemia: string;
     carbohydrate: string;
@@ -40,62 +36,58 @@ export default function HomeScreen() {
     userId: string;
   };
 
-  function addTheNewGlycemicData() {
-    if (newGlycemicDataID === undefined) return;
+  // Helper functions
+  const handleInputChange = (field: string, value: string) => {
+    setNewGlycemicData((prev) => ({ ...prev, [field]: value }));
+  };
 
-    const filteredList = glycemicDataList.filter(
-      (e) => e.id === newGlycemicDataID
+  const addGlycemicData = () => {
+    const existingEntry = glycemicDataList.find(
+      (item) => item.id === newGlycemicData.id
     );
 
-    if (filteredList.length === 0) {
-      setNewGlycemicDataList((prevData) => [
-        ...prevData,
-        {
-          id: newGlycemicDataID,
-          dateTime: newDateTime,
-          dose: newDose,
-          insulineType: newInsulinType,
-          glycemia: newGlycemia,
-          carbohydrate: newCarbohydrate,
-          userId: newUserId,
-        },
-      ]);
-    }
-  }
-
-  function deleteGlycemicData(theGlycemicData: number) {
-    setNewGlycemicDataList(
-      glycemicDataList.filter((e) => e.id !== theGlycemicData)
-    );
-  }
-
-  const getNewGlycemicData = async () => {
-    try {
-      const response = await fetch('http://localhost:8089/glycemia/glycemia');
-      const json = await response.json();
-      console.log(json); // Log the response to inspect the data structure
-      setNewGlycemicDataList(json);  // Ensure json structure matches the ItemProps type
-    } catch (error) {
-      console.error(error);
+    if (!existingEntry) {
+      setGlycemicDataList((prevList) => [...prevList, newGlycemicData]);
     }
   };
 
-  useEffect(() => {
-    getNewGlycemicData();
-  }, []);
+  const deleteGlycemicData = (id: number) => {
+    setGlycemicDataList((prevList) =>
+      prevList.filter((item) => item.id !== id)
+    );
+  };
 
-  const Item = (itemProps: ItemProps) => (
+  const fetchGlycemicData = async () => {
+    try {
+      const response = await fetch('http://localhost:8089/glycemia/glycemia');
+      const json = await response.json();
+      setGlycemicDataList(json);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  };
+
+  // Components
+  const GlycemicDataItem = ({
+    id,
+    dateTime,
+    insulineType,
+    glycemia,
+    carbohydrate,
+    dose,
+    userId,
+  }: ItemProps) => (
     <View style={styles.card}>
-      <Text style={styles.cardText}>ID: {itemProps.id}</Text>
-      <Text style={styles.cardText}>Insulin Type: {itemProps.insulineType}</Text>
-      <Text style={styles.cardText}>Glycemia: {itemProps.glycemia}</Text>
-      <Text style={styles.cardText}>Carbohydrate: {itemProps.carbohydrate}</Text>
-      <Text style={styles.cardText}>Dose: {itemProps.dose}</Text>
-      <Text style={styles.cardText}>User ID: {itemProps.userId}</Text>
-      <Text style={styles.cardText}>date time: {itemProps.dateTime}</Text>
+      <Text style={styles.cardText}>ID: {id}</Text>
+      <Text style={styles.cardText}>Date Time: {dateTime}</Text>
+      <Text style={styles.cardText}>Insulin Type: {insulineType}</Text>
+      <Text style={styles.cardText}>Glycemia: {glycemia}</Text>
+      <Text style={styles.cardText}>Carbohydrate: {carbohydrate}</Text>
+      <Text style={styles.cardText}>Dose: {dose}</Text>
+      <Text style={styles.cardText}>User ID: {userId}</Text>
       <TouchableOpacity
         style={styles.deleteButton}
-        onPress={() => deleteGlycemicData(itemProps.id)}
+        onPress={() => deleteGlycemicData(id)}
       >
         <Text style={styles.buttonText}>Delete</Text>
       </TouchableOpacity>
@@ -106,63 +98,33 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Add Glycemic Data</Text>
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Insert ID"
-          keyboardType="numeric"
-          onChangeText={(id: string) => setNewGlycemicDataId(parseInt(id))}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Insert Insulin Type"
-          onChangeText={(insulinType: string) => setNewInsulinType(insulinType)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Insert Glycemia"
-          onChangeText={(glycemia: string) => setNewGlycemia(glycemia)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Insert Carbohydrate"
-          onChangeText={(carbohydrate: string) =>
-            setNewCarboidrate(carbohydrate)
-          }
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Insert Dose"
-          onChangeText={(dose: string) => setNewDose(dose)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Insert User ID"
-          onChangeText={(userId: string) => setnewUserId(userId)}
-        />
+        {['id', 'dateTime', 'insulineType', 'glycemia', 'carbohydrate', 'dose', 'userId'].map(
+          (field) => (
+            <TextInput
+              key={field}
+              style={styles.input}
+              placeholder={`Insert ${field}`}
+              keyboardType={field === 'id' ? 'numeric' : 'default'}
+              onChangeText={(value) => handleInputChange(field, value)}
+            />
+          )
+        )}
       </View>
-      <TouchableOpacity style={styles.addButton} onPress={addTheNewGlycemicData}>
+      <TouchableOpacity style={styles.addButton} onPress={addGlycemicData}>
         <Text style={styles.buttonText}>Add Glycemic Data</Text>
       </TouchableOpacity>
       <Text style={styles.separator}>Glycemic Data Records</Text>
       <FlatList
         data={glycemicDataList}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Item
-            id={item.id}
-            dose={item.dose}
-            insulineType={item.insulineType}
-            glycemia={item.glycemia}
-            carbohydrate={item.carbohydrate}
-            userId={item.userId} 
-            dateTime={item.dateTime}          />
-        )}
+        renderItem={({ item }) => <GlycemicDataItem {...item} />}
         contentContainerStyle={styles.cardList}
       />
     </View>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
