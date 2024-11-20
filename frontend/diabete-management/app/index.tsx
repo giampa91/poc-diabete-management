@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   StyleSheet,
@@ -10,25 +10,29 @@ import {
 } from 'react-native';
 
 export default function HomeScreen() {
-  const [glycemicDataList, setNewGlycemicDataList] = useState([
-    {
-      id: 1,
-      insulineType: 'fiasp',
-      glycemia: '120',
-      carbohydrate: '12',
-      dose: '2',
-      userId: '1',
-    },
-  ]);
+  // const [glycemicDataList, setNewGlycemicDataList] = useState([
+  //   {
+  //     id: 1,
+  //     insulineType: 'fiasp',
+  //     glycemia: '120',
+  //     carbohydrate: '12',
+  //     dose: '2',
+  //     userId: '1',
+  //   },
+  // ]);
   const [newGlycemicDataID, setNewGlycemicDataId] = useState(1);
   const [newInsulinType, setNewInsulinType] = useState('');
   const [newGlycemia, setNewGlycemia] = useState('');
   const [newCarbohydrate, setNewCarboidrate] = useState('');
   const [newDose, setNewDose] = useState('');
   const [newUserId, setnewUserId] = useState('');
+  const [newDateTime, setnewDateTime] = useState('');
+
+  const [glycemicDataList, setNewGlycemicDataList] = useState<ItemProps[]>([]);
 
   type ItemProps = {
     id: number;
+    dateTime: string;  // Ensure this matches the actual response
     insulineType: string;
     glycemia: string;
     carbohydrate: string;
@@ -44,10 +48,11 @@ export default function HomeScreen() {
     );
 
     if (filteredList.length === 0) {
-      setNewGlycemicDataList([
-        ...glycemicDataList,
+      setNewGlycemicDataList((prevData) => [
+        ...prevData,
         {
           id: newGlycemicDataID,
+          dateTime: newDateTime,
           dose: newDose,
           insulineType: newInsulinType,
           glycemia: newGlycemia,
@@ -64,6 +69,21 @@ export default function HomeScreen() {
     );
   }
 
+  const getNewGlycemicData = async () => {
+    try {
+      const response = await fetch('http://localhost:8089/glycemia/glycemia');
+      const json = await response.json();
+      console.log(json); // Log the response to inspect the data structure
+      setNewGlycemicDataList(json);  // Ensure json structure matches the ItemProps type
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getNewGlycemicData();
+  }, []);
+
   const Item = (itemProps: ItemProps) => (
     <View style={styles.card}>
       <Text style={styles.cardText}>ID: {itemProps.id}</Text>
@@ -72,6 +92,7 @@ export default function HomeScreen() {
       <Text style={styles.cardText}>Carbohydrate: {itemProps.carbohydrate}</Text>
       <Text style={styles.cardText}>Dose: {itemProps.dose}</Text>
       <Text style={styles.cardText}>User ID: {itemProps.userId}</Text>
+      <Text style={styles.cardText}>date time: {itemProps.dateTime}</Text>
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => deleteGlycemicData(itemProps.id)}
@@ -133,8 +154,8 @@ export default function HomeScreen() {
             insulineType={item.insulineType}
             glycemia={item.glycemia}
             carbohydrate={item.carbohydrate}
-            userId={item.userId}
-          />
+            userId={item.userId} 
+            dateTime={item.dateTime}          />
         )}
         contentContainerStyle={styles.cardList}
       />
