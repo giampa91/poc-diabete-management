@@ -16,13 +16,17 @@ export default function HomeScreen() {
     insulinType: '',
     glycemia: '',
     carbohydrate: '',
-    dose: '',
-    userId: '',
-    userName: '',
+    dose: ''
   });
+  const [currentUser, setCurrentUser] = useState({
+    "id": 1,
+    "name": "John",
+    "surname": "Snow"
+});
   const [glycemicDataList, setGlycemicDataList] = useState<ItemProps[]>([]);
 
   useEffect(() => {
+    fetchCurrentUserData();
     fetchGlycemicData();
   }, []);
 
@@ -34,7 +38,6 @@ export default function HomeScreen() {
     glycemia: string;
     carbohydrate: string;
     dose: string;
-    userId: string;
     userName: string;
   };
 
@@ -56,7 +59,7 @@ export default function HomeScreen() {
                 glycemia: newGlycemicData.glycemia,
                 carbohydrate: newGlycemicData.carbohydrate,
                 dose: newGlycemicData.dose,
-                userId: newGlycemicData.userId
+                userId: currentUser.id,
             }),
       });
       const json = await response.json();
@@ -93,6 +96,16 @@ export default function HomeScreen() {
     }
   };
 
+  const fetchCurrentUserData = async () => {
+    try {
+      const response = await fetch('http://localhost:8089/user/users');
+      const json = await response.json();
+      setCurrentUser(json[0]);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  };
+
   // Components
   const GlycemicDataItem = ({
     id,
@@ -100,9 +113,7 @@ export default function HomeScreen() {
     insulinType,
     glycemia,
     carbohydrate,
-    dose,
-    userId,
-    userName,
+    dose
   }: ItemProps) => (
     <View style={styles.card}>
       <Text style={styles.cardText}>Date Time: {dateTime}</Text>
@@ -110,8 +121,6 @@ export default function HomeScreen() {
       <Text style={styles.cardText}>Glycemia: {glycemia}</Text>
       <Text style={styles.cardText}>Carbohydrate: {carbohydrate}</Text>
       <Text style={styles.cardText}>Dose: {dose}</Text>
-      <Text style={styles.cardText}>User ID: {userId}</Text>
-      <Text style={styles.cardText}>User name: {userName}</Text>
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => deleteGlycemicData(id)}
@@ -123,9 +132,10 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <Text>User name and Surname: {currentUser.name} {currentUser.surname}</Text>
       <Text style={styles.title}>Add Glycemic Data</Text>
       <View style={styles.inputContainer}>
-        {['insulinType', 'glycemia', 'carbohydrate', 'dose', 'userId'].map(
+        {['insulinType', 'glycemia', 'carbohydrate', 'dose'].map(
           (field) => (
             <TextInput
               key={field}
