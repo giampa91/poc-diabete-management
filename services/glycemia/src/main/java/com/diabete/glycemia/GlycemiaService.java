@@ -84,6 +84,7 @@ public class GlycemiaService {
 		newGlycemicValues.setGlycemia(dto.getGlycemia());
 		newGlycemicValues.setInsulinType(dto.getInsulinType());
 		newGlycemicValues.setDose(dto.getDose());
+		newGlycemicValues.setUserId(dto.getUserId());
 		return newGlycemicValues;
 	}
 
