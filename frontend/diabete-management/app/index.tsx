@@ -69,9 +69,6 @@ export default function HomeScreen() {
   };
 
   const deleteGlycemicData = async (id: number) => {
-    setGlycemicDataList((prevList) =>
-      prevList.filter((item) => item.id !== id)
-    );
 
     try {
       const response = await fetch('http://localhost:8089/glycemia/Glycemia/' + id, {
