@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,7 +17,7 @@ public class GlycemiaService {
 	private static String userUrl = "http://user-service";
 	private static String calculationUrl = "http://calculation-service";
 	private static long lastGeneratedidGlycemiaValue=1;
-	private static List<GlycemicValues> glicemicValuesList;
+	private static ArrayList<GlycemicValues> glicemicValuesList;
 
 	@Autowired
 	WebClient.Builder webClient;
@@ -60,7 +61,7 @@ public class GlycemiaService {
 		Optional<GlycemicValues> found = glicemicValuesList.stream().filter(el -> el.getId() == id).findAny();
 		
 		if(found.isPresent()) {
-			glicemicValuesList = glicemicValuesList.stream().filter(el -> el.getId() != id).toList();
+			glicemicValuesList.remove(found.get());
 			return toDto(found.get());
 		}
 		throw new RuntimeException("glycemic data not found");
