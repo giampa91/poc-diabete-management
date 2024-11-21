@@ -11,9 +11,9 @@ import {
 export default function HomeScreen() {
   // State management
   const [newGlycemicData, setNewGlycemicData] = useState({
-    id: 1,
+    id: 0,
     dateTime: '',
-    insulineType: '',
+    insulinType: '',
     glycemia: '',
     carbohydrate: '',
     dose: '',
@@ -29,7 +29,7 @@ export default function HomeScreen() {
   type ItemProps = {
     id: number;
     dateTime: string;
-    insulineType: string;
+    insulinType: string;
     glycemia: string;
     carbohydrate: string;
     dose: string;
@@ -41,20 +41,47 @@ export default function HomeScreen() {
     setNewGlycemicData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const addGlycemicData = () => {
-    const existingEntry = glycemicDataList.find(
-      (item) => item.id === newGlycemicData.id
-    );
+  const addGlycemicData = async () => {
 
-    if (!existingEntry) {
-      setGlycemicDataList((prevList) => [...prevList, newGlycemicData]);
+    try {
+      const response = await fetch('http://localhost:8089/glycemia/Glycemia', {
+        method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8'
+            },
+            body: JSON.stringify({
+                insulinType: newGlycemicData.insulinType,
+                glycemia: newGlycemicData.glycemia,
+                carbohydrate: newGlycemicData.carbohydrate,
+                dose: newGlycemicData.dose,
+                userId: newGlycemicData.userId
+            }),
+      });
+      const json = await response.json();
+      console.log(json);
+      fetchGlycemicData();
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
     }
+    
   };
 
-  const deleteGlycemicData = (id: number) => {
+  const deleteGlycemicData = async (id: number) => {
     setGlycemicDataList((prevList) =>
       prevList.filter((item) => item.id !== id)
     );
+
+    try {
+      const response = await fetch('http://localhost:8089/glycemia/Glycemia/' + id, {
+        method: 'DELETE',
+      });
+      const json = await response.json();
+      console.log(json);
+      fetchGlycemicData();
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+
   };
 
   const fetchGlycemicData = async () => {
@@ -71,7 +98,7 @@ export default function HomeScreen() {
   const GlycemicDataItem = ({
     id,
     dateTime,
-    insulineType,
+    insulinType,
     glycemia,
     carbohydrate,
     dose,
@@ -80,7 +107,7 @@ export default function HomeScreen() {
     <View style={styles.card}>
       <Text style={styles.cardText}>ID: {id}</Text>
       <Text style={styles.cardText}>Date Time: {dateTime}</Text>
-      <Text style={styles.cardText}>Insulin Type: {insulineType}</Text>
+      <Text style={styles.cardText}>Insulin Type: {insulinType}</Text>
       <Text style={styles.cardText}>Glycemia: {glycemia}</Text>
       <Text style={styles.cardText}>Carbohydrate: {carbohydrate}</Text>
       <Text style={styles.cardText}>Dose: {dose}</Text>
@@ -98,7 +125,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Add Glycemic Data</Text>
       <View style={styles.inputContainer}>
-        {['id', 'dateTime', 'insulineType', 'glycemia', 'carbohydrate', 'dose', 'userId'].map(
+        {['insulinType', 'glycemia', 'carbohydrate', 'dose', 'userId'].map(
           (field) => (
             <TextInput
               key={field}
