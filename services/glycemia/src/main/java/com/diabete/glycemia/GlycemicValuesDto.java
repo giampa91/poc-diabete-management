@@ -11,6 +11,7 @@ public class GlycemicValuesDto {
 	private int carbohydrate;
 	private int dose;
 	private long userId;
+	private String userName;
 	
 	public long getId() {
 		return id;
@@ -67,4 +68,12 @@ public class GlycemicValuesDto {
 		this.dose = dose;
 	}
 	
+	public String getUserName() {
+		return userName;
+	}
+	
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 }

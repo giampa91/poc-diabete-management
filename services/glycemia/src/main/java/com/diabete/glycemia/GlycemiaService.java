@@ -28,7 +28,7 @@ public class GlycemiaService {
 	public UserDto getUser(long id) {		
 		return webClient.build()
         .get()
-        .uri(userUrl + "/users/1")
+        .uri(userUrl + "/users/" + id)
         .retrieve()
         .bodyToMono(UserDto.class).block();
 	}
@@ -76,6 +76,7 @@ public class GlycemiaService {
 		dto.setInsulinType(value.getInsulinType());
 		dto.setDose(value.getDose());
 		dto.setUserId(value.getUserId());
+		dto.setUserName(getUser(value.getUserId()).getName());
 		return dto;
 	}
 	
