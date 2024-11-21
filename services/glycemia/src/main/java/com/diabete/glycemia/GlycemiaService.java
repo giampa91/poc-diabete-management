@@ -16,10 +16,14 @@ public class GlycemiaService {
 	private static String userUrl = "http://user-service";
 	private static String calculationUrl = "http://calculation-service";
 	private static long lastGeneratedidGlycemiaValue=1;
-	private static List<GlycemicValues> glicemicValuesList = new ArrayList<GlycemicValues>();
+	private static List<GlycemicValues> glicemicValuesList;
 
 	@Autowired
 	WebClient.Builder webClient;
+	
+	public GlycemiaService() {
+		glicemicValuesList = new ArrayList<GlycemicValues>();
+	}
 
 	public UserDto getUser(long id) {		
 		return webClient.build()
