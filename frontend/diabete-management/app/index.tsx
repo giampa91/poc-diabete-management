@@ -18,6 +18,7 @@ export default function HomeScreen() {
     carbohydrate: '',
     dose: '',
     userId: '',
+    userName: '',
   });
   const [glycemicDataList, setGlycemicDataList] = useState<ItemProps[]>([]);
 
@@ -34,6 +35,7 @@ export default function HomeScreen() {
     carbohydrate: string;
     dose: string;
     userId: string;
+    userName: string;
   };
 
   // Helper functions
@@ -103,15 +105,16 @@ export default function HomeScreen() {
     carbohydrate,
     dose,
     userId,
+    userName,
   }: ItemProps) => (
     <View style={styles.card}>
-      <Text style={styles.cardText}>ID: {id}</Text>
       <Text style={styles.cardText}>Date Time: {dateTime}</Text>
       <Text style={styles.cardText}>Insulin Type: {insulinType}</Text>
       <Text style={styles.cardText}>Glycemia: {glycemia}</Text>
       <Text style={styles.cardText}>Carbohydrate: {carbohydrate}</Text>
       <Text style={styles.cardText}>Dose: {dose}</Text>
       <Text style={styles.cardText}>User ID: {userId}</Text>
+      <Text style={styles.cardText}>User name: {userName}</Text>
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => deleteGlycemicData(id)}
