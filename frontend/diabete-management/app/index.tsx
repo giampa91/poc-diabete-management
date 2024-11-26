@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 export default function HomeScreen() {
-  // State management
   const [newGlycemicData, setNewGlycemicData] = useState({
     id: 0,
     dateTime: '',
@@ -18,17 +17,21 @@ export default function HomeScreen() {
     carbohydrate: '',
     dose: ''
   });
-  const [currentUser, setCurrentUser] = useState({
-    "id": 1,
-    "name": "John",
-    "surname": "Snow"
-});
+  const [currentUser, setCurrentUser] = useState({});
   const [glycemicDataList, setGlycemicDataList] = useState<ItemProps[]>([]);
+  const [currentToken, setCurrentToken] = useState('');
+  const [isTokenLoaded, setIsTokenLoaded] = useState(false); // Track if token is loaded
 
   useEffect(() => {
-    fetchCurrentUserData();
-    fetchGlycemicData();
+    fetchToken(); // Fetch the token when the app starts
   }, []);
+
+  useEffect(() => {
+    if (isTokenLoaded) {
+      fetchCurrentUserData();
+      fetchGlycemicData();
+    }
+  }, [isTokenLoaded]); // Fetch data only after the token is loaded
 
   // Types
   type ItemProps = {
@@ -41,66 +44,128 @@ export default function HomeScreen() {
     userName: string;
   };
 
-  // Helper functions
   const handleInputChange = (field: string, value: string) => {
     setNewGlycemicData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const addGlycemicData = async () => {
+  // Function to fetch token
+  const fetchToken = async () => {
+    try {
+      const response = await fetch('http://localhost:8089/auth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        body: JSON.stringify({
+          username: 'JohnSnow',
+          password: 'password',
+        }),
+      });
 
+      if (response.ok) {
+        const result = await response.text();
+        setIsTokenLoaded(true);  // Set token as loaded
+        console.log('Token:', result);
+        setCurrentToken(result);
+      } else {
+        console.error('Failed to fetch token');
+        setIsTokenLoaded(true);  // Set token as loaded to stop waiting
+      }
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+      setIsTokenLoaded(true);  // Set token as loaded to stop waiting
+    }
+  };
+
+  // Fetch current user data
+  const fetchCurrentUserData = async () => {
+    try {
+      const response = await fetch('http://localhost:8089/user/users', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + currentToken,
+        },
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        setCurrentUser(json[0]);
+      } else {
+        console.error('Failed to fetch user data');
+      }
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  };
+
+  // Fetch glycemic data
+  const fetchGlycemicData = async () => {
+    try {
+      const response = await fetch('http://localhost:8089/glycemia/Glycemia', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + currentToken,
+        },
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        setGlycemicDataList(json);
+      } else {
+        console.error('Failed to fetch glycemic data');
+      }
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
+  };
+
+  // Add glycemic data
+  const addGlycemicData = async () => {
     try {
       const response = await fetch('http://localhost:8089/glycemia/Glycemia', {
         method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=UTF-8'
-            },
-            body: JSON.stringify({
-                insulinType: newGlycemicData.insulinType,
-                glycemia: newGlycemicData.glycemia,
-                carbohydrate: newGlycemicData.carbohydrate,
-                dose: newGlycemicData.dose,
-                userId: currentUser.id,
-            }),
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'Authorization': 'Bearer ' + currentToken,  // Include the token
+        },
+        body: JSON.stringify({
+          insulinType: newGlycemicData.insulinType,
+          glycemia: newGlycemicData.glycemia,
+          carbohydrate: newGlycemicData.carbohydrate,
+          dose: newGlycemicData.dose,
+          userId: currentUser.id,
+        }),
       });
-      const json = await response.json();
-      console.log(json);
-      fetchGlycemicData();
+
+      if (response.ok) {
+        const json = await response.json();
+        console.log('Glycemic Data added:', json);
+        fetchGlycemicData();
+      } else {
+        console.error('Failed to add glycemic data');
+      }
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
-    
   };
 
+  // Delete glycemic data
   const deleteGlycemicData = async (id: number) => {
-
     try {
-      const response = await fetch('http://localhost:8089/glycemia/Glycemia/' + id, {
+      const response = await fetch(`http://localhost:8089/glycemia/Glycemia/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + currentToken,  // Include the token
+        },
       });
-      const json = await response.json();
-      console.log(json);
-      fetchGlycemicData();
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
 
-  };
-
-  const fetchGlycemicData = async () => {
-    try {
-      const response = await fetch('http://localhost:8089/glycemia/Glycemia');
-      const json = await response.json();
-      setGlycemicDataList(json);
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
-  };
-
-  const fetchCurrentUserData = async () => {
-    try {
-      const response = await fetch('http://localhost:8089/user/users');
-      const json = await response.json();
-      setCurrentUser(json[0]);
+      if (response.ok) {
+        const json = await response.json();
+        console.log('Glycemic Data deleted:', json);
+        fetchGlycemicData();
+      } else {
+        console.error('Failed to delete glycemic data');
+      }
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
@@ -132,31 +197,37 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>User name and Surname: {currentUser.name} {currentUser.surname}</Text>
-      <Text style={styles.title}>Add Glycemic Data</Text>
-      <View style={styles.inputContainer}>
-        {['insulinType', 'glycemia', 'carbohydrate', 'dose'].map(
-          (field) => (
-            <TextInput
-              key={field}
-              style={styles.input}
-              placeholder={`Insert ${field}`}
-              keyboardType={field === 'id' ? 'numeric' : 'default'}
-              onChangeText={(value) => handleInputChange(field, value)}
-            />
-          )
-        )}
-      </View>
-      <TouchableOpacity style={styles.addButton} onPress={addGlycemicData}>
-        <Text style={styles.buttonText}>Add Glycemic Data</Text>
-      </TouchableOpacity>
-      <Text style={styles.separator}>Glycemic Data Records</Text>
-      <FlatList
-        data={glycemicDataList}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <GlycemicDataItem {...item} />}
-        contentContainerStyle={styles.cardList}
-      />
+      {isTokenLoaded ? (
+        <>
+          <Text>User name and Surname: {currentUser.name} {currentUser.surname}</Text>
+          <Text style={styles.title}>Add Glycemic Data</Text>
+          <View style={styles.inputContainer}>
+            {['insulinType', 'glycemia', 'carbohydrate', 'dose'].map(
+              (field) => (
+                <TextInput
+                  key={field}
+                  style={styles.input}
+                  placeholder={`Insert ${field}`}
+                  keyboardType={field === 'id' ? 'numeric' : 'default'}
+                  onChangeText={(value) => handleInputChange(field, value)}
+                />
+              )
+            )}
+          </View>
+          <TouchableOpacity style={styles.addButton} onPress={addGlycemicData}>
+            <Text style={styles.buttonText}>Add Glycemic Data</Text>
+          </TouchableOpacity>
+          <Text style={styles.separator}>Glycemic Data Records</Text>
+          <FlatList
+            data={glycemicDataList}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <GlycemicDataItem {...item} />}
+            contentContainerStyle={styles.cardList}
+          />
+        </>
+      ) : (
+        <Text>Loading token...</Text> // Show a loading indicator while the token is being loaded
+      )}
     </View>
   );
 }
