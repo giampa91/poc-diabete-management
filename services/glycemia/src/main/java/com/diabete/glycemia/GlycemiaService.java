@@ -29,7 +29,7 @@ public class GlycemiaService {
 	public UserDto getUser(long id) {		
 		return webClient.build()
         .get()
-        .uri(userUrl + "/users/" + id)
+        .uri(userUrl + "/user/users/" + id)
         .retrieve()
         .bodyToMono(UserDto.class).block();
 	}
@@ -54,6 +54,9 @@ public class GlycemiaService {
 	}
 	
 	public List<GlycemicValuesDto> getGlicemicValuesList(){
+		
+		UserDto userDto = getUser(1);
+		
 		return glicemicValuesList.stream().map(value -> toDto(value)).toList();
 	}
 
