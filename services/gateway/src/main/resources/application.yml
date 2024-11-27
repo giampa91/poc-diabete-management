@@ -1,5 +1,46 @@
+#spring:
+#  config:
+#    import: optional:configserver:http://localhost:8888
+#  application:
+#    name: api-gateway
+
+server:
+  port: 8089
+
 spring:
-  config:
-    import: optional:configserver:http://localhost:8888
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/diabete-management-realm
+          jwk-set-uri: http://localhost:8080/realms/diabete-management-realm/protocol/openid-connect/certs
+  cloud:
+    gateway:
+      routes:
+        - id: glycemia-service
+          uri: lb://GLYCEMIA-SERVICE
+          predicates:
+            - Path=/glycemia/**
+
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user/**
+
+#        - id: identity-service
+#          uri: lb://IDENTITY-SERVICE
+#          predicates:
+#            - Path=/auth/**
+
   application:
     name: api-gateway
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    hostname: localhost
+

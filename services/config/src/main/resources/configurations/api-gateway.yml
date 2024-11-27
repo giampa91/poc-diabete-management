@@ -1,26 +1,29 @@
-server:
-  port: 8089
-
-spring:
- cloud:
-   gateway:
-     routes:
-       - id: glycemia-service
-         uri: lb://GLYCEMIA-SERVICE
-         predicates:
-           - Path=/glycemia/**
-         filters:
-           - AuthenticationFilter
-
-
-       - id: user-service
-         uri: lb://USER-SERVICE
-         predicates:
-           - Path=/user/**
-         filters:
-           - AuthenticationFilter
-
-       - id: identity-service
-         uri: lb://IDENTITY-SERVICE
-         predicates:
-           - Path=/auth/**
+#server:
+#  port: 8089
+#
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: glycemia-service
+#          uri: lb://GLYCEMIA-SERVICE
+#          predicates:
+#            - Path=/glycemia/**
+#
+#        - id: user-service
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/user/**
+#
+#        - id: identity-service
+#          uri: lb://IDENTITY-SERVICE
+#          predicates:
+#            - Path=/auth/**
+#
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:8080/realms/diabete-management-realm
+#		  jwk-set-uri: http://localhost:8080/realms/diabete-management-realm/protocol/openid-connect/certs
+		
