@@ -17,17 +17,16 @@ public class AppConfig {
 	    return WebClient.builder();
 	}
 
-    @Bean
-    public CorsWebFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:8081"); // Replace with your frontend's domain
-        config.addAllowedOrigin("http://example.com"); // Add other allowed domains as needed
-        config.addAllowedMethod("*");
-        config.addAllowedHeader("*");
-        config.setAllowCredentials(true); // Allows cookies or tokens
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return new CorsWebFilter(source);
-    }
+//    @Bean
+//    public CorsWebFilter corsFilter() {
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.addAllowedOrigin("http://localhost:3000"); // Replace with your frontend's domain
+//        config.addAllowedMethod("*");
+//        config.addAllowedHeader("*");
+//       // config.setAllowCredentials(true); // Allows cookies or tokens
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", config);
+//        return new CorsWebFilter(source);
+//    }
 }
